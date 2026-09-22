@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parte Digital - CREM 2025-2027</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        html {
+            --color-bg-primary: #FAFAFA;
+            --color-bg-secondary: #F0F0F0;
+            --color-bg-tertiary: #E8E8E8;
+            --color-text-primary: #1a1a1a;
+            --color-text-secondary: #505050;
+            --color-text-tertiary: #8a8a8a;
+            --color-military-dark: #1B3A5C;
+            --color-military-accent: #2C3E50;
+            --color-bronze: #B8860B;
+            --color-border: #D0D0D0;
+            --color-success: #2d5016;
+            --color-danger: #cc3333;
+            --border-radius: 4px;
+            --font-sans: "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+        
+        @media (prefers-color-scheme: dark) {
+            html {
+                --color-bg-primary: #1a1a1a;
+                --color-bg-secondary: #252525;
+                --color-bg-tertiary: #2d2d2d;
+                --color-text-primary: #f5f5f5;
+                --color-text-secondary: #c0c0c0;
+                --color-text-tertiary: #8a8a8a;
+                --color-military-dark: #0f2438;
+                --color-military-accent: #1a3a52;
+                --color-bronze: #d4a574;
+                --color-border: #404040;
+                --color-success: #7ac97e;
+                --color-danger: #d97f7f;
+            }
+        }
+        
+        body {
+            font-family: var(--font-sans);
+            background: var(--color-bg-primary);
+            color: var(--color-text-primary);
+            line-height: 1.5;
+        }
+        
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0;
+        }
+        
+        .header {
+            background: var(--color-military-dark);
+            color: #ffffff;
+            padding: 2.5rem 2rem;
+            text-align: center;
+            border-bottom: 4px solid var(--color-bronze);
+            margin-bottom: 2rem;
+        }
+        
+        .header-subtitle {
+            font-size: 11px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--color-bronze);
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+        
+        .header-title {
+            font-size: 32px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            margin-bottom: 0.25rem;
+            color: #ffffff;
+        }
+        
+        .header-meta {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.8);
+            margin-top: 1rem;
+        }
+        
+        .sync-indicator {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.7);
+            margin-top: 0.5rem;
+        }
+        
+        .sync-dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #4ade80;
+            margin-right: 6px;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .content {
+            padding: 0 2rem 2rem;
+        }
+        
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 16px;
+            margin-bottom: 2rem;
+        }
+        
+        .metric-card {
+            background: var(--color-bg-secondary);
+            border-left: 4px solid var(--color-military-accent);
+            padding: 1.5rem;
+            border-radius: 0;
+            border: 1px solid var(--color-border);
+            border-left: 4px solid var(--color-military-accent);
+        }
+        
+        .metric-label {
+            font-size: 11px;
+            color: var(--color-text-tertiary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.75rem;
+            font-weight: 600;
+        }
+        
+        .metric-value {
+            font-size: 36px;
+            font-weight: 700;
+            line-height: 1;
+            margin-bottom: 0.5rem;
+            font-family: "Courier New", monospace;
+        }
+        
+        .metric-value.valor-fuerza {
+            color: #003366;
+        }
+        
+        .metric-value.valor-forman {
+            color: #2d6b2d;
+        }
+        
+        .metric-value.valor-faltan {
+            color: #cc3333;
+        }
+        
+        .metric-pct {
+            font-size: 13px;
+            color: var(--color-text-secondary);
+        }
+        
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+        
+        button {
+            padding: 0.65rem 1.25rem;
+            font-size: 13px;
+            border: 1px solid var(--color-border);
+            background: var(--color-bg-secondary);
+            color: var(--color-text-primary);
+            cursor: pointer;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            border-radius: 0;
+            transition: all 0.2s ease;
+        }
+        
+        button:hover {
+            background: var(--color-military-accent);
+            color: #ffffff;
+            border-color: var(--color-military-accent);
+        }
+        
+        button:active {
+            transform: scale(0.98);
+        }
+        
+        .roster-wrapper {
+            background: var(--color-bg-secondary);
+            border: 1px solid var(--color-border);
+            border-top: 3px solid var(--color-military-accent);
+            overflow: auto;
+            margin-bottom: 2rem;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+        
+        th {
+            background: var(--color-military-accent);
+            color: #ffffff;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            font-size: 12px;
+            text-transform: uppercase;
+            border-bottom: 2px solid var(--color-military-dark);
+            position: sticky;
+            top: 0;
+        }
+        
+        th:nth-child(1) { width: 50%; }
+        th:nth-child(2) { width: 15%; text-align: center; }
+        th:nth-child(3) { width: 35%; }
+        
+        td {
+            padding: 12px;
+            border-bottom: 1px solid var(--color-border);
+        }
+        
+        tbody tr:hover {
+            background: var(--color-bg-tertiary);
+        }
+        
+        tbody tr:nth-child(even) {
+            background: var(--color-bg-primary);
+        }
+        
+        .officer-name {
+            font-weight: 600;
+            color: var(--color-military-dark);
+            font-size: 13px;
+        }
+        
+        .toggle-cell {
+            text-align: center;
+        }
+        
+        input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            accent-color: var(--color-military-accent);
+        }
+        
+        input[type="text"],
+        select {
+            padding: 8px 10px;
+            border: 1px solid var(--color-border);
+            border-radius: 0;
+            font-size: 12px;
+            width: 100%;
+            background: var(--color-bg-primary);
+            color: var(--color-text-primary);
+            font-family: var(--font-sans);
+        }
+        
+        input[type="text"]:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--color-military-accent);
+            box-shadow: inset 0 0 0 2px rgba(27, 58, 92, 0.1);
+        }
+        
+        .reason-cell {
+            font-size: 12px;
+            color: var(--color-text-secondary);
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 0;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+        
+        .badge-present {
+            background: rgba(45, 80, 22, 0.15);
+            color: var(--color-success);
+            border: 1px solid rgba(45, 80, 22, 0.3);
+        }
+        
+        .badge-absent {
+            background: rgba(139, 46, 46, 0.15);
+            color: var(--color-danger);
+            border: 1px solid rgba(139, 46, 46, 0.3);
+        }
+        
+        #absent-panel {
+            background: var(--color-bg-secondary);
+            border-left: 4px solid var(--color-danger);
+            border: 1px solid var(--color-border);
+            border-left: 4px solid var(--color-danger);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            margin-top: 2rem;
+            border-radius: 0;
+        }
+        
+        #absent-panel h3 {
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--color-military-dark);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .absent-item {
+            background: var(--color-bg-primary);
+            padding: 12px;
+            margin-bottom: 8px;
+            border: 1px solid var(--color-border);
+            border-left: 3px solid var(--color-danger);
+        }
+        
+        .absent-name {
+            font-weight: 600;
+            color: var(--color-danger);
+            font-size: 13px;
+            margin-bottom: 4px;
+        }
+        
+        .absent-reason {
+            font-size: 12px;
+            color: var(--color-text-secondary);
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: var(--color-text-tertiary);
+        }
+        
+        .footer {
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--color-border);
+            text-align: center;
+            font-size: 11px;
+            color: var(--color-text-tertiary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        @media (max-width: 768px) {
+            .header-title {
+                font-size: 24px;
+            }
+            
+            .content {
+                padding: 0 1rem 1rem;
+            }
+            
+            .summary-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="header-subtitle">Ejército de Chile — Academia de Guerra</div>
+            <h1 class="header-title">PARTE DIGITAL</h1>
+            <div class="header-subtitle">CREM 2025-2027</div>
+            <div class="header-meta" id="current-date"></div>
+            <div class="sync-indicator">
+                <span class="sync-dot"></span>
+                Sincronización en tiempo real
+            </div>
+        </div>
+
+        <div class="content">
+            <div class="summary-grid">
+                <div class="metric-card">
+                    <div class="metric-label">Fuerza</div>
+                    <div class="metric-value valor-fuerza" id="total-force">—</div>
+                    <div class="metric-pct">Total de lista</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Forman</div>
+                    <div class="metric-value valor-forman" id="present-count">—</div>
+                    <div class="metric-pct"><span id="present-pct">—</span>%</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Faltan</div>
+                    <div class="metric-value valor-faltan" id="absent-count">—</div>
+                    <div class="metric-pct"><span id="absent-pct">—</span>%</div>
+                </div>
+            </div>
+
+            <div id="absent-panel" style="display: none;">
+                <h3>Consolidado de ausentes</h3>
+                <div id="absent-list"></div>
+            </div>
+
+            <div class="controls">
+                <button onclick="markAllPresent()">✓ Todos presentes</button>
+                <button onclick="exportData()">⬇ Descargar reporte</button>
+                <button onclick="resetAll()">↻ Limpiar datos</button>
+            </div>
+
+            <div class="roster-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Oficial</th>
+                            <th>Presente</th>
+                            <th>Motivo falta</th>
+                        </tr>
+                    </thead>
+                    <tbody id="roster-body">
+                        <tr><td colspan="3" class="loading">Cargando datos...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="footer">
+                Los datos se sincronizan en tiempo real con todos los usuarios
+            </div>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js"></script>
+    <script>
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyAASLDUIe-gRGhfOo5y0jaL_jo9GavgDCI",
+            authDomain: "parte-digital-crem-2025-2027.firebaseapp.com",
+            projectId: "parte-digital-crem-2025-2027",
+            storageBucket: "parte-digital-crem-2025-2027.firebasestorage.app",
+            messagingSenderId: "940609966475",
+            appId: "1:940609966475:web:a4c305d8b923059d0ddf8e"
+        };
+
+        // Initialize Firebase
+        const app = firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore(app);
+
+        let data = [];
+        let unsubscribe = null;
+
+        const officers = [
+            { rank: "TCL", fullName: "TCL Vicente Octavio Cursach Gómez" },
+            { rank: "TCL", fullName: "TCL María Emilia Lineros Echeverría" },
+            { rank: "TCL", fullName: "TCL Gustavo Francisco Valladares Videla" },
+            { rank: "TCL", fullName: "TCL Patricia Aracely Seguel Lavin" },
+            { rank: "MAY", fullName: "MAY María Luisa Rojas Mora" },
+            { rank: "MAY", fullName: "MAY Cristina Soledad Villanueva Durán" },
+            { rank: "MAY", fullName: "MAY Víctor Javier Parra Iturrieta" },
+            { rank: "MAY", fullName: "MAY Oscar Eduardo Pizarro Campos" },
+            { rank: "MAY", fullName: "MAY Guillermo Alberto Espinosa Repenning" },
+            { rank: "MAY", fullName: "MAY Claudio Alejandro Gallardo Cordones" },
+            { rank: "MAY", fullName: "MAY Diego Hernán Manríquez Muñoz" },
+            { rank: "MAY", fullName: "MAY Sebastián Rodolfo Muñoz Pizarro" },
+            { rank: "MAY", fullName: "MAY Javier Eduardo Molina Castillo" },
+            { rank: "MAY", fullName: "MAY Francisco Juan Ignacio Núñez Zúñiga" },
+            { rank: "MAY", fullName: "MAY Fabricio Andrés Navarrete Fernández" },
+            { rank: "MAY", fullName: "MAY José Miguel Arancibia Pietrantoni" },
+            { rank: "MAY", fullName: "MAY Alejandro Andrés Urriaga Hidalgo" },
+            { rank: "MAY", fullName: "MAY Francisco Horacio Fiedler Bórquez" },
+            { rank: "MAY", fullName: "MAY Jaime Joaquín Sandoval Briones" },
+            { rank: "MAY", fullName: "MAY Pablo Andrés Aguirre Guedelhoefer" },
+            { rank: "MAY", fullName: "MAY Alejandro Edmundo Cortés Garrido" },
+            { rank: "MAY", fullName: "MAY Francisco Hernán Vargas Cantillano" },
+            { rank: "MAY", fullName: "MAY Felipe Alejandro Schiessler Martoni" },
+            { rank: "MAY", fullName: "MAY Felipe Andrés Mosso Thielemann" },
+            { rank: "MAY", fullName: "MAY Camilo Ignacio Hernández Pons" },
+            { rank: "MAY", fullName: "MAY Fabrizio Jordán Riffo Muñoz" },
+            { rank: "MAY", fullName: "MAY Felipe Benjamín Arce Arellano" },
+            { rank: "MAY", fullName: "MAY Enrique Héctor Valenzuela Ibarra" },
+            { rank: "MAY", fullName: "MAY Tomás Ignacio González Ibáñez" },
+            { rank: "MAY", fullName: "MAY Ricardo Andrés Jimenez Tossi" },
+            { rank: "MAY", fullName: "MAY Carlos Manuel Williams Cuevas" },
+            { rank: "MAY", fullName: "MAY Fabián Ignacio Burboa Quintana" },
+            { rank: "MAY", fullName: "MAY Paul Sven Villagrán Ruttkowski" },
+            { rank: "MAY", fullName: "MAY Hugo Patricio Fernández Hernández" },
+            { rank: "MAY", fullName: "MAY Paolo Filippo Giannoni Grimaldi" },
+            { rank: "MAY", fullName: "MAY Cristobal Ariel Carrasco Rodriguez" },
+            { rank: "MAY", fullName: "MAY Felipe Ignacio Fuenzalida Berrios" },
+            { rank: "MAY", fullName: "MAY Matías Alejandro Cerda Aguilar" },
+            { rank: "MAY", fullName: "MAY María José Ayamante Montenegro" },
+            { rank: "MAY", fullName: "MAY Rodrigo Andrés Yévenes Suazo" },
+            { rank: "MAY", fullName: "MAY Jorge Hernan Muñoz Parra" }
+        ];
+
+        async function initializeData() {
+            try {
+                const querySnapshot = await db.collection('officers').get();
+                
+                if (querySnapshot.empty) {
+                    // Initialize with all officers
+                    const batch = db.batch();
+                    officers.forEach((officer, idx) => {
+                        const docRef = db.collection('officers').doc(String(idx));
+                        batch.set(docRef, {
+                            rank: officer.rank,
+                            fullName: officer.fullName,
+                            present: true,
+                            reason: '',
+                            otherReason: ''
+                        });
+                    });
+                    await batch.commit();
+                }
+                
+                setupRealTimeListener();
+            } catch (error) {
+                console.error('Error initializing:', error);
+            }
+        }
+
+        function setupRealTimeListener() {
+            if (unsubscribe) unsubscribe();
+            
+            unsubscribe = db.collection('officers').onSnapshot(snapshot => {
+                data = [];
+                snapshot.forEach(doc => {
+                    data.push({
+                        id: doc.id,
+                        ...doc.data()
+                    });
+                });
+                data.sort((a, b) => parseInt(a.id) - parseInt(b.id));
+                renderRoster();
+            });
+        }
+
+        function formatDate() {
+            const now = new Date();
+            const options = {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: false
+            };
+            return now.toLocaleDateString('es-CL', options);
+        }
+
+        function renderRoster() {
+            const tbody = document.getElementById('roster-body');
+            const reasons = [
+                "FERIADO LEGAL",
+                "PERMISO ADMINISTRATIVO",
+                "HORA MEDICO",
+                "HORA DENTISTA",
+                "HORA HOSMIL",
+                "LICENCIA MEDICA",
+                "COLEGIO HIJO/A",
+                "AUTORIZACION JEFE DE CURSO",
+                "OTROS"
+            ];
+            
+            tbody.innerHTML = data.map((officer, idx) => {
+                const statusBadge = officer.present 
+                    ? '<span class="status-badge badge-present">Presente</span>' 
+                    : '<span class="status-badge badge-absent">Ausente</span>';
+                
+                let reasonCell = '';
+                if (officer.present) {
+                    reasonCell = statusBadge;
+                } else {
+                    const optionsHtml = reasons.map(reason => 
+                        `<option value="${reason}" ${officer.reason === reason ? 'selected' : ''}>${reason}</option>`
+                    ).join('');
+                    
+                    reasonCell = `
+                        <select onchange="updateReason('${officer.id}', this.value)" style="width: 100%; margin-bottom: 8px;">
+                            <option value="">Selecciona motivo</option>
+                            ${optionsHtml}
+                        </select>
+                    `;
+                    
+                    if (officer.reason === "OTROS" || (officer.reason && !reasons.includes(officer.reason))) {
+                        reasonCell += `
+                            <input type="text" 
+                                placeholder="Especifica el motivo" 
+                                value="${officer.otherReason || ''}" 
+                                onchange="updateOtherReason('${officer.id}', this.value)" 
+                                style="width: 100%; padding: 8px 10px; border: 1px solid var(--color-border); border-radius: 0; font-size: 12px; background: var(--color-bg-primary); color: var(--color-text-primary);">
+                        `;
+                    }
+                }
+                
+                return `
+                    <tr>
+                        <td class="officer-name">${officer.fullName}</td>
+                        <td class="toggle-cell">
+                            <input type="checkbox" ${officer.present ? 'checked' : ''} 
+                                onchange="togglePresent('${officer.id}', this.checked)">
+                        </td>
+                        <td class="reason-cell">
+                            ${reasonCell}
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+            updateSummary();
+        }
+
+        function togglePresent(id, present) {
+            db.collection('officers').doc(id).update({
+                present: present,
+                reason: present ? '' : null,
+                otherReason: present ? '' : null
+            });
+        }
+
+        function updateReason(id, reason) {
+            db.collection('officers').doc(id).update({
+                reason: reason,
+                otherReason: reason !== "OTROS" ? '' : null
+            });
+        }
+
+        function updateOtherReason(id, text) {
+            db.collection('officers').doc(id).update({
+                otherReason: text
+            });
+        }
+
+        function updateSummary() {
+            const total = data.length;
+            const present = data.filter(o => o.present).length;
+            const absent = total - present;
+            
+            document.getElementById('total-force').textContent = total;
+            document.getElementById('present-count').textContent = present;
+            document.getElementById('absent-count').textContent = absent;
+            document.getElementById('present-pct').textContent = total > 0 ? Math.round((present / total) * 100) : 0;
+            document.getElementById('absent-pct').textContent = total > 0 ? Math.round((absent / total) * 100) : 0;
+            
+            updateAbsentPanel();
+        }
+
+        function updateAbsentPanel() {
+            const absents = data.filter(o => !o.present);
+            const panel = document.getElementById('absent-panel');
+            const list = document.getElementById('absent-list');
+            
+            if (absents.length === 0) {
+                panel.style.display = 'none';
+                return;
+            }
+            
+            panel.style.display = 'block';
+            list.innerHTML = absents.map(officer => {
+                const reason = officer.reason === "OTROS" ? officer.otherReason : officer.reason;
+                const displayReason = reason ? `<strong>${reason}</strong>` : '<em>Sin motivo especificado</em>';
+                
+                return `
+                    <div class="absent-item">
+                        <div class="absent-name">${officer.fullName}</div>
+                        <div class="absent-reason">Motivo: ${displayReason}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function resetAll() {
+            if (confirm('¿Deseas resetear a todos como presentes?')) {
+                const batch = db.batch();
+                data.forEach(officer => {
+                    batch.update(db.collection('officers').doc(officer.id), {
+                        present: true,
+                        reason: '',
+                        otherReason: ''
+                    });
+                });
+                batch.commit();
+            }
+        }
+
+        function markAllPresent() {
+            const batch = db.batch();
+            data.forEach(officer => {
+                batch.update(db.collection('officers').doc(officer.id), {
+                    present: true,
+                    reason: '',
+                    otherReason: ''
+                });
+            });
+            batch.commit();
+        }
+
+        function exportData() {
+            const present = data.filter(o => o.present);
+            const absent = data.filter(o => !o.present);
+            
+            let csv = "PARTE DIGITAL CREM 2025-2027\n";
+            csv += "Ejército de Chile - Academia de Guerra\n";
+            csv += "Generado: " + formatDate() + "\n\n";
+            csv += `RESUMEN:\n`;
+            csv += `Fuerza: ${data.length}\n`;
+            csv += `Forman: ${present.length} (${Math.round((present.length / data.length) * 100)}%)\n`;
+            csv += `Faltan: ${absent.length} (${Math.round((absent.length / data.length) * 100)}%)\n\n`;
+            
+            csv += "OFICIALES PRESENTES:\n";
+            present.forEach(o => csv += o.fullName + "\n");
+            
+            if (absent.length > 0) {
+                csv += "\n\nOFICIALES AUSENTES:\n";
+                absent.forEach(o => {
+                    const reason = o.reason === "OTROS" ? o.otherReason : o.reason;
+                    csv += o.fullName + (reason ? " - Motivo: " + reason : "") + "\n";
+                });
+            }
+            
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement("a");
+            const url = URL.createObjectURL(blob);
+            link.setAttribute("href", url);
+            link.setAttribute("download", `Parte_Digital_CREM_${new Date().toISOString().split('T')[0]}.csv`);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        document.getElementById('current-date').textContent = formatDate();
+        initializeData();
+    </script>
+</body>
+</html>
