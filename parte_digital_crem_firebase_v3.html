@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parte Digital - CREM 2025-2027</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        html {
+            --bg-primary: #FAFAFA;
+            --bg-secondary: #F0F0F0;
+            --text-primary: #1a1a1a;
+            --text-secondary: #505050;
+            --text-tertiary: #8a8a8a;
+            --military-dark: #1B3A5C;
+            --military-accent: #2C3E50;
+            --bronze: #B8860B;
+            --border: #D0D0D0;
+            --success: #2d6b2d;
+            --danger: #cc3333;
+        }
+        
+        @media (prefers-color-scheme: dark) {
+            html {
+                --bg-primary: #1a1a1a;
+                --bg-secondary: #252525;
+                --text-primary: #f5f5f5;
+                --text-secondary: #c0c0c0;
+                --text-tertiary: #8a8a8a;
+                --military-dark: #0f2438;
+                --military-accent: #1a3a52;
+                --bronze: #d4a574;
+                --border: #404040;
+            }
+        }
+        
+        body {
+            font-family: "Segoe UI", Roboto, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.5;
+        }
+        
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0;
+        }
+        
+        .header {
+            background: var(--military-dark);
+            color: #fff;
+            padding: 2.5rem 2rem;
+            text-align: center;
+            border-bottom: 4px solid var(--bronze);
+        }
+        
+        .header-subtitle {
+            font-size: 11px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--bronze);
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+        
+        .header-title {
+            font-size: 32px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            margin-bottom: 0.25rem;
+        }
+        
+        .header-meta {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.8);
+            margin-top: 1rem;
+        }
+        
+        .sync-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background: #2d6b2d;
+            border-radius: 50%;
+            margin-right: 6px;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .content {
+            padding: 2rem;
+        }
+        
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 16px;
+            margin-bottom: 2rem;
+        }
+        
+        .metric-card {
+            background: var(--bg-secondary);
+            border-left: 4px solid var(--military-accent);
+            padding: 1.5rem;
+            border: 1px solid var(--border);
+        }
+        
+        .metric-label {
+            font-size: 11px;
+            color: var(--text-tertiary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.75rem;
+            font-weight: 600;
+        }
+        
+        .metric-value {
+            font-size: 36px;
+            font-weight: 700;
+            line-height: 1;
+            margin-bottom: 0.5rem;
+            font-family: "Courier New", monospace;
+        }
+        
+        .valor-fuerza { color: #003366; }
+        .valor-forman { color: #2d6b2d; }
+        .valor-faltan { color: #cc3333; }
+        
+        .metric-pct {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+        
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+        
+        button {
+            padding: 0.65rem 1.25rem;
+            font-size: 13px;
+            border: 1px solid var(--border);
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            cursor: pointer;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            transition: all 0.2s ease;
+        }
+        
+        button:hover {
+            background: var(--military-accent);
+            color: #fff;
+            border-color: var(--military-accent);
+        }
+        
+        .roster-wrapper {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-top: 3px solid var(--military-accent);
+            overflow-x: auto;
+            margin-bottom: 2rem;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+        
+        th {
+            background: var(--military-accent);
+            color: #fff;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            font-size: 12px;
+            text-transform: uppercase;
+            border-bottom: 2px solid var(--military-dark);
+            position: sticky;
+            top: 0;
+        }
+        
+        th:nth-child(1) { width: 50%; }
+        th:nth-child(2) { width: 15%; text-align: center; }
+        th:nth-child(3) { width: 35%; }
+        
+        td {
+            padding: 12px;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        tbody tr:nth-child(even) {
+            background: var(--bg-primary);
+        }
+        
+        .officer-name {
+            font-weight: 600;
+            color: var(--military-dark);
+        }
+        
+        .toggle-cell { text-align: center; }
+        
+        input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+        
+        input[type="text"], select {
+            padding: 8px 10px;
+            border: 1px solid var(--border);
+            font-size: 12px;
+            width: 100%;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-family: inherit;
+            margin-bottom: 6px;
+        }
+        
+        input[type="text"]:focus, select:focus {
+            outline: none;
+            border-color: var(--military-accent);
+            box-shadow: inset 0 0 0 2px rgba(27, 58, 92, 0.1);
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+        
+        .badge-present {
+            background: rgba(45, 80, 22, 0.15);
+            color: var(--success);
+            border: 1px solid rgba(45, 80, 22, 0.3);
+        }
+        
+        .badge-absent {
+            background: rgba(139, 46, 46, 0.15);
+            color: var(--danger);
+            border: 1px solid rgba(139, 46, 46, 0.3);
+        }
+        
+        #absent-panel {
+            background: var(--bg-secondary);
+            border-left: 4px solid var(--danger);
+            border: 1px solid var(--border);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        #absent-panel h3 {
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--military-dark);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .absent-item {
+            background: var(--bg-primary);
+            padding: 12px;
+            margin-bottom: 8px;
+            border: 1px solid var(--border);
+            border-left: 3px solid var(--danger);
+        }
+        
+        .absent-name {
+            font-weight: 600;
+            color: var(--danger);
+            font-size: 13px;
+            margin-bottom: 4px;
+        }
+        
+        .absent-reason {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+        
+        .admin-panel {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-left: 4px solid var(--bronze);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .admin-panel h3 {
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--military-dark);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .footer {
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border);
+            text-align: center;
+            font-size: 11px;
+            color: var(--text-tertiary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-secondary);
+        }
+        
+        .error {
+            background: rgba(204, 51, 51, 0.15);
+            border: 1px solid rgba(204, 51, 51, 0.3);
+            color: var(--danger);
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-radius: 4px;
+        }
+        
+        @media (max-width: 768px) {
+            .content { padding: 1rem; }
+            .header-title { font-size: 24px; }
+            .summary-grid { grid-template-columns: 1fr 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="header-subtitle">Ejército de Chile — Academia de Guerra</div>
+            <h1 class="header-title">PARTE DIGITAL</h1>
+            <div class="header-subtitle">CREM 2025-2027</div>
+            <div class="header-meta">
+                <span class="sync-indicator" id="sync-dot"></span>
+                <span id="current-date"></span>
+            </div>
+        </div>
+
+        <div class="content">
+            <div id="error-container"></div>
+
+            <div class="summary-grid">
+                <div class="metric-card">
+                    <div class="metric-label">Fuerza</div>
+                    <div class="metric-value valor-fuerza" id="total-force">-</div>
+                    <div class="metric-pct">Total de lista</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Forman</div>
+                    <div class="metric-value valor-forman" id="present-count">-</div>
+                    <div class="metric-pct"><span id="present-pct">-</span>%</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Faltan</div>
+                    <div class="metric-value valor-faltan" id="absent-count">-</div>
+                    <div class="metric-pct"><span id="absent-pct">-</span>%</div>
+                </div>
+            </div>
+
+            <div id="absent-panel" style="display: none;">
+                <h3>Consolidado de ausentes</h3>
+                <div id="absent-list"></div>
+            </div>
+
+            <div class="controls">
+                <button onclick="markAllPresent()">✓ Todos presentes</button>
+                <button onclick="exportData()">⬇ Descargar reporte</button>
+                <button onclick="toggleAdminPanel()">⚙ Administrar</button>
+            </div>
+
+            <div id="admin-panel" class="admin-panel" style="display: none;">
+                <h3>Panel de Administración</h3>
+                
+                <div style="margin-bottom: 1.5rem; padding-bottom: 1.5rem; border-bottom: 1px solid var(--border);">
+                    <h4 style="font-size: 11px; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 1rem; letter-spacing: 0.5px;">Agregar nuevo oficial</h4>
+                    <div style="display: grid; grid-template-columns: 1fr 2fr 1fr; gap: 10px;">
+                        <select id="new-rank">
+                            <option value="TCL">TCL</option>
+                            <option value="MAY">MAY</option>
+                        </select>
+                        <input type="text" id="new-name" placeholder="Nombre completo del oficial">
+                        <button onclick="addOfficer()">+ Agregar</button>
+                    </div>
+                </div>
+                
+                <div>
+                    <h4 style="font-size: 11px; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 1rem; letter-spacing: 0.5px;">Editar o eliminar</h4>
+                    <div id="admin-list" style="max-height: 300px; overflow-y: auto; background: var(--bg-primary); border: 1px solid var(--border); padding: 12px;"></div>
+                </div>
+            </div>
+
+            <div class="roster-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Oficial</th>
+                            <th>Presente</th>
+                            <th>Motivo falta</th>
+                        </tr>
+                    </thead>
+                    <tbody id="roster-body">
+                        <tr><td colspan="3" style="text-align: center; padding: 2rem;"><div class="loading">Conectando a servidor...</div></td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="footer">
+                Datos sincronizados en tiempo real con Firebase
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/11.0.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore-compat.js"></script>
+
+    <script>
+        // ===== FIREBASE CONFIG =====
+        const firebaseConfig = {
+            apiKey: "AIzaSyDcs2zxRbm7JwmP8_QTBfpUMC3O_Ony8",
+            authDomain: "parte-digital-2025-2027.firebaseapp.com",
+            projectId: "parte-digital-2025-2027",
+            storageBucket: "parte-digital-2025-2027.firebasestorage.app",
+            messagingSenderId: "1116375216002",
+            appId: "1:1116375216002:web:4aa601f63e993fe42f87b"
+        };
+
+        // Inicializar Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        const officers = [
+            { rank: "TCL", fullName: "TCL Vicente Octavio Cursach Gómez" },
+            { rank: "TCL", fullName: "TCL María Emilia Lineros Echeverría" },
+            { rank: "TCL", fullName: "TCL Gustavo Francisco Valladares Videla" },
+            { rank: "TCL", fullName: "TCL Patricia Aracely Seguel Lavin" },
+            { rank: "MAY", fullName: "MAY María Luisa Rojas Mora" },
+            { rank: "MAY", fullName: "MAY Cristina Soledad Villanueva Durán" },
+            { rank: "MAY", fullName: "MAY Víctor Javier Parra Iturrieta" },
+            { rank: "MAY", fullName: "MAY Oscar Eduardo Pizarro Campos" },
+            { rank: "MAY", fullName: "MAY Guillermo Alberto Espinosa Repenning" },
+            { rank: "MAY", fullName: "MAY Claudio Alejandro Gallardo Cordones" },
+            { rank: "MAY", fullName: "MAY Diego Hernán Manríquez Muñoz" },
+            { rank: "MAY", fullName: "MAY Sebastián Rodolfo Muñoz Pizarro" },
+            { rank: "MAY", fullName: "MAY Javier Eduardo Molina Castillo" },
+            { rank: "MAY", fullName: "MAY Francisco Juan Ignacio Núñez Zúñiga" },
+            { rank: "MAY", fullName: "MAY Fabricio Andrés Navarrete Fernández" },
+            { rank: "MAY", fullName: "MAY José Miguel Arancibia Pietrantoni" },
+            { rank: "MAY", fullName: "MAY Alejandro Andrés Urriaga Hidalgo" },
+            { rank: "MAY", fullName: "MAY Francisco Horacio Fiedler Bórquez" },
+            { rank: "MAY", fullName: "MAY Jaime Joaquín Sandoval Briones" },
+            { rank: "MAY", fullName: "MAY Pablo Andrés Aguirre Guedelhoefer" },
+            { rank: "MAY", fullName: "MAY Alejandro Edmundo Cortés Garrido" },
+            { rank: "MAY", fullName: "MAY Francisco Hernán Vargas Cantillano" },
+            { rank: "MAY", fullName: "MAY Felipe Alejandro Schiessler Martoni" },
+            { rank: "MAY", fullName: "MAY Felipe Andrés Mosso Thielemann" },
+            { rank: "MAY", fullName: "MAY Camilo Ignacio Hernández Pons" },
+            { rank: "MAY", fullName: "MAY Fabrizio Jordán Riffo Muñoz" },
+            { rank: "MAY", fullName: "MAY Felipe Benjamín Arce Arellano" },
+            { rank: "MAY", fullName: "MAY Enrique Héctor Valenzuela Ibarra" },
+            { rank: "MAY", fullName: "MAY Tomás Ignacio González Ibáñez" },
+            { rank: "MAY", fullName: "MAY Ricardo Andrés Jimenez Tossi" },
+            { rank: "MAY", fullName: "MAY Carlos Manuel Williams Cuevas" },
+            { rank: "MAY", fullName: "MAY Fabián Ignacio Burboa Quintana" },
+            { rank: "MAY", fullName: "MAY Paul Sven Villagrán Ruttkowski" },
+            { rank: "MAY", fullName: "MAY Hugo Patricio Fernández Hernández" },
+            { rank: "MAY", fullName: "MAY Paolo Filippo Giannoni Grimaldi" },
+            { rank: "MAY", fullName: "MAY Cristobal Ariel Carrasco Rodriguez" },
+            { rank: "MAY", fullName: "MAY Felipe Ignacio Fuenzalida Berrios" },
+            { rank: "MAY", fullName: "MAY Matías Alejandro Cerda Aguilar" },
+            { rank: "MAY", fullName: "MAY María José Ayamante Montenegro" },
+            { rank: "MAY", fullName: "MAY Rodrigo Andrés Yévenes Suazo" },
+            { rank: "MAY", fullName: "MAY Jorge Hernan Muñoz Parra" }
+        ];
+
+        const reasons = [
+            "FERIADO LEGAL",
+            "PERMISO ADMINISTRATIVO",
+            "HORA MEDICO",
+            "HORA DENTISTA",
+            "HORA HOSMIL",
+            "LICENCIA MEDICA",
+            "COLEGIO HIJO/A",
+            "AUTORIZACION JEFE DE CURSO",
+            "OTROS"
+        ];
+
+        let data = [];
+        let unsubscribe = null;
+
+        function initializeData() {
+            // Verificar si existen datos en Firestore
+            db.collection("oficiales").limit(1).get().then(snapshot => {
+                if (snapshot.empty) {
+                    // Primera vez: crear datos iniciales
+                    const batch = db.batch();
+                    officers.forEach(o => {
+                        const ref = db.collection("oficiales").doc(o.fullName);
+                        batch.set(ref, {
+                            fullName: o.fullName,
+                            rank: o.rank,
+                            present: true,
+                            reason: '',
+                            otherReason: ''
+                        });
+                    });
+                    batch.commit().then(() => {
+                        setupRealtimeListener();
+                    });
+                } else {
+                    setupRealtimeListener();
+                }
+            });
+        }
+
+        function setupRealtimeListener() {
+            if (unsubscribe) unsubscribe();
+            
+            unsubscribe = db.collection("oficiales")
+                .orderBy("fullName")
+                .onSnapshot(snapshot => {
+                    data = [];
+                    snapshot.forEach(doc => {
+                        data.push({ ...doc.data(), id: doc.id });
+                    });
+                    updateSyncIndicator();
+                    renderRoster();
+                }, error => {
+                    showError("Error de conexión: " + error.message);
+                });
+        }
+
+        function updateSyncIndicator() {
+            const dot = document.getElementById('sync-dot');
+            dot.style.background = '#2d6b2d';
+        }
+
+        function showError(msg) {
+            const container = document.getElementById('error-container');
+            container.innerHTML = `<div class="error">⚠ ${msg}</div>`;
+        }
+
+        function formatDate() {
+            const now = new Date();
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false };
+            return now.toLocaleDateString('es-CL', options);
+        }
+
+        function renderRoster() {
+            const tbody = document.getElementById('roster-body');
+            if (data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="3" style="text-align: center; padding: 2rem;">Cargando...</td></tr>';
+                return;
+            }
+            
+            tbody.innerHTML = data.map((officer, idx) => {
+                const statusBadge = officer.present 
+                    ? '<span class="status-badge badge-present">Presente</span>' 
+                    : '<span class="status-badge badge-absent">Ausente</span>';
+                
+                let reasonCell = '';
+                if (officer.present) {
+                    reasonCell = statusBadge;
+                } else {
+                    const optionsHtml = reasons.map(r => 
+                        `<option value="${r}" ${officer.reason === r ? 'selected' : ''}>${r}</option>`
+                    ).join('');
+                    
+                    reasonCell = `
+                        <select onchange="updateReason('${officer.id}', this.value)">
+                            <option value="">Selecciona motivo</option>
+                            ${optionsHtml}
+                        </select>
+                    `;
+                    
+                    if (officer.reason === "OTROS") {
+                        reasonCell += `
+                            <input type="text" 
+                                placeholder="Especifica el motivo" 
+                                value="${officer.otherReason || ''}" 
+                                onchange="updateOtherReason('${officer.id}', this.value)">
+                        `;
+                    }
+                }
+                
+                return `
+                    <tr>
+                        <td class="officer-name">${officer.fullName}</td>
+                        <td class="toggle-cell">
+                            <input type="checkbox" ${officer.present ? 'checked' : ''} 
+                                onchange="togglePresent('${officer.id}', this.checked)">
+                        </td>
+                        <td>${reasonCell}</td>
+                    </tr>
+                `;
+            }).join('');
+            updateSummary();
+        }
+
+        function togglePresent(id, present) {
+            db.collection("oficiales").doc(id).update({
+                present: present,
+                reason: present ? '' : db.FieldValue.serverTimestamp(),
+                otherReason: present ? '' : ''
+            });
+        }
+
+        function updateReason(id, reason) {
+            db.collection("oficiales").doc(id).update({
+                reason: reason,
+                otherReason: reason !== "OTROS" ? '' : data.find(d => d.id === id)?.otherReason || ''
+            });
+        }
+
+        function updateOtherReason(id, text) {
+            db.collection("oficiales").doc(id).update({
+                otherReason: text
+            });
+        }
+
+        function updateSummary() {
+            const total = data.length;
+            const present = data.filter(o => o.present).length;
+            const absent = total - present;
+            
+            document.getElementById('total-force').textContent = total;
+            document.getElementById('present-count').textContent = present;
+            document.getElementById('absent-count').textContent = absent;
+            document.getElementById('present-pct').textContent = total > 0 ? Math.round((present / total) * 100) : 0;
+            document.getElementById('absent-pct').textContent = total > 0 ? Math.round((absent / total) * 100) : 0;
+            updateAbsentPanel();
+        }
+
+        function updateAbsentPanel() {
+            const absents = data.filter(o => !o.present);
+            const panel = document.getElementById('absent-panel');
+            const list = document.getElementById('absent-list');
+            
+            if (absents.length === 0) {
+                panel.style.display = 'none';
+                return;
+            }
+            
+            panel.style.display = 'block';
+            list.innerHTML = absents.map(officer => {
+                const reason = officer.reason === "OTROS" ? officer.otherReason : officer.reason;
+                const displayReason = reason ? `<strong>${reason}</strong>` : '<em>Sin motivo</em>';
+                return `
+                    <div class="absent-item">
+                        <div class="absent-name">${officer.fullName}</div>
+                        <div class="absent-reason">Motivo: ${displayReason}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function markAllPresent() {
+            const batch = db.batch();
+            data.forEach(o => {
+                batch.update(db.collection("oficiales").doc(o.id), {
+                    present: true,
+                    reason: '',
+                    otherReason: ''
+                });
+            });
+            batch.commit();
+        }
+
+        function exportData() {
+            const present = data.filter(o => o.present);
+            const absent = data.filter(o => !o.present);
+            let csv = "PARTE DIGITAL CREM 2025-2027\nEjército de Chile\n" + formatDate() + "\n\n";
+            csv += `Fuerza: ${data.length}\nForman: ${present.length} (${Math.round((present.length/data.length)*100)}%)\nFaltan: ${absent.length}\n\n`;
+            csv += "PRESENTES:\n";
+            present.forEach(o => csv += o.fullName + "\n");
+            csv += "\nAUSENTES:\n";
+            absent.forEach(o => {
+                const reason = o.reason === "OTROS" ? o.otherReason : o.reason;
+                csv += o.fullName + (reason ? " - " + reason : "") + "\n";
+            });
+            
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement("a");
+            link.setAttribute("href", URL.createObjectURL(blob));
+            link.setAttribute("download", `Parte_Digital_${new Date().toISOString().split('T')[0]}.csv`);
+            link.click();
+        }
+
+        function toggleAdminPanel() {
+            const panel = document.getElementById('admin-panel');
+            panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+            if (panel.style.display === 'block') {
+                renderAdminList();
+            }
+        }
+
+        function addOfficer() {
+            const rank = document.getElementById('new-rank').value;
+            const name = document.getElementById('new-name').value.trim();
+            
+            if (!name) {
+                alert('Ingresa el nombre del oficial');
+                return;
+            }
+            
+            const fullName = `${rank} ${name}`;
+            
+            db.collection("oficiales").doc(fullName).set({
+                fullName: fullName,
+                rank: rank,
+                present: true,
+                reason: '',
+                otherReason: ''
+            }).then(() => {
+                document.getElementById('new-name').value = '';
+                renderAdminList();
+            });
+        }
+
+        function deleteOfficer(id) {
+            const officer = data.find(o => o.id === id);
+            if (confirm(`¿Eliminar a ${officer.fullName}?`)) {
+                db.collection("oficiales").doc(id).delete();
+            }
+        }
+
+        function renderAdminList() {
+            const list = document.getElementById('admin-list');
+            if (data.length === 0) {
+                list.innerHTML = '<p style="text-align: center; color: var(--text-tertiary); padding: 1rem;">No hay oficiales</p>';
+                return;
+            }
+            
+            list.innerHTML = data.map((o) => `
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px; margin-bottom: 8px; background: var(--bg-secondary); border: 1px solid var(--border);">
+                    <span style="font-weight: 600; font-size: 13px;">${o.fullName}</span>
+                    <button onclick="deleteOfficer('${o.id}')" style="padding: 6px 12px; font-size: 11px; background: #cc3333; color: #fff; border: none; cursor: pointer; font-weight: 600;">✕ Eliminar</button>
+                </div>
+            `).join('');
+        }
+
+        document.getElementById('current-date').textContent = formatDate();
+        initializeData();
+    </script>
+</body>
+</html>
